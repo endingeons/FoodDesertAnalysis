@@ -1,4 +1,4 @@
-from localSQLConfig import host_name, user_name, user_password
+from .localSQLConfig import host_name, user_name, user_password
 import mysql.connector
 from mysql.connector import Error
 
@@ -50,6 +50,7 @@ def insert_census_data(connection, data):
     # Excute query
     execute_list_query(connection, pop_census(), census_vals)
 
+
 def pop_census():
     sql = """
             INSERT INTO census_tract (census_tract_id, LILATracts_1And10, state, county, latitude, longitude)
@@ -75,6 +76,19 @@ def execute_query(connection, query):
         cursor.execute(query)
         connection.commit()
         # print("Query successful")
+    except Error as err:
+        print(f"Error: '{err}'")
+
+
+def execute_query_fetchall(connection, query):
+    # https://www.freecodecamp.org/news/connect-python-with-sql/
+    cursor = connection.cursor()
+    try:
+        cursor.execute('USE fooddesert')
+        cursor.execute(query)
+        x = cursor.fetchall()
+        print("Fetch all successful")
+        return x
     except Error as err:
         print(f"Error: '{err}'")
 

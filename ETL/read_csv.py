@@ -13,16 +13,6 @@ def filter_data(food_atlas_data, cdc_data):
     food_atlas_data_flt = food_atlas_data[food_atlas_data['State'] == 'New Jersey']
     cdc_data_flt = cdc_data[cdc_data['StateAbbr'] == 'NJ']
 
-    # Keep only necessary fields in filtered CSV
-    # food_atlas_data['LILATracts_1And10']
-    # food_atlas_data['Census Tract']
-    # food_atlas_data['State']
-    # food_atlas_data['County']
-
-    # cdc_data['Location Id']
-    # cdc_data['Geolocation']
-    # cdc_data['StateAbbr']
-
     food_atlas_data_flt.to_csv('{}\\food_atlas_data_nj.csv'.format(OUTPUT_PATH), index=False, index_label=None)
     cdc_data_flt.to_csv('{}\\cdc_data_nj.csv'.format(OUTPUT_PATH), index=False, index_label=None)
 

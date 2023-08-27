@@ -2,6 +2,9 @@ from getRestaurants import *
 from read_csv import *
 import os.path
 from load import *
+import datetime
+
+print('Start: {}'.format(datetime.datetime.now()))
 
 # Get lat, lon for each census tract
 radius = 1609.344  # meters, 1 mile == 1609.344 meters
@@ -46,23 +49,30 @@ insert_census_data(connection, merge_data)
 length_data = len(merge_data)
 
 for index, row in merge_data.iterrows():
+    page = 1
     print('{}/{}'.format(index+1, length_data))
+    # Insert Restaurant Data
+    print('Trying to insert restaurant data from census tract: {}'.format(row['CensusTract']))
+    print('{}'.format(datetime.datetime.now()))
+
     # Search census tract lat, lon
+    print('Page {}'.format(page))
     results, next_page_token = nearby_search(row['census_lat'], row['census_lon'], radius)
-    all_results = all_results + results
+    restaurant_dict = parse_nearby_search_result(results, row['CensusTract'])
+    restaurant_df = pd.DataFrame(restaurant_dict)
+    insert_restaurant_data(connection, restaurant_df)
+    page += 1
 
     while next_page_token:
         results, next_page_token = get_next_page_nearby_search(next_page_token)
         if next_page_token:
-            all_results = all_results + results
-
-    restaurant_dict = parse_nearby_search_result(all_results, row['CensusTract'])
-    restaurant_df = pd.DataFrame(restaurant_dict)
-
-    # Insert Restaurant Data
-    print('Trying to insert restaurant data from census tract: {}'.format(row['CensusTract']))
-    insert_restaurant_data(connection, restaurant_df)
+            print('Page {}'.format(page))
+            restaurant_dict = parse_nearby_search_result(results, row['CensusTract'])
+            restaurant_df = pd.DataFrame(restaurant_dict)
+            insert_restaurant_data(connection, restaurant_df)
+            page += 1
 
 # Close connection
+print('{}'.format(datetime.datetime.now()))
 close_local_sql_db(connection)
 

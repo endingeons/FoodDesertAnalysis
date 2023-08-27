@@ -1,7 +1,6 @@
 from secretKeys import maps_api_key
 import requests
 from getNutrition import *
-import numpy as np
 
 
 def nearby_search(lat, lon, radius):
@@ -57,16 +56,15 @@ def parse_nearby_search_result(results, census_id):
         # If food list was generated, get the average nutrients for all food listed for current restaurant
         if food_list:
             food_list = list(set(food_list))
+            if len(food_list) > 10:
+                food_list = food_list[:10]
             avg_nutrition = get_average_nutrition(food_list)
             calories = avg_nutrition['calories']
             protein = avg_nutrition['protein']
             fat = avg_nutrition['fat']
             carbs = avg_nutrition['carbs']
         else:  # No nutritional information, all NaN
-            calories = np.nan
-            protein = np.nan
-            fat = np.nan
-            carbs = np.nan
+            continue
 
         all_restaurants_dict = all_restaurants_dict + \
                                [{'name': r['name'],
